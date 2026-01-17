@@ -19,17 +19,18 @@ public class Cliente {
     @Column(nullable = false, length = 100)
     private String nome;
 
-    @Column(unique = true, nullable = false, length = 18)
-    private String documento; // CPF ou CNPJ
+    @Column(unique = true, nullable = false, length = 14)
+    private String documento;
 
     private String telefone;
-    private String email;
+    private Boolean isVip = false;
 
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+    @Column(columnDefinition = "jsonb") // Postgres specific
+    private String endereco;
+
+    @OneToMany(mappedBy = "cliente")
     private List<Veiculo> veiculos;
 
-    public Cliente() {
-    }
 
     public UUID getId() {
         return id;
@@ -63,12 +64,20 @@ public class Cliente {
         this.telefone = telefone;
     }
 
-    public String getEmail() {
-        return email;
+    public Boolean getVip() {
+        return isVip;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setVip(Boolean vip) {
+        isVip = vip;
+    }
+
+    public String getEndereco() {
+        return endereco;
+    }
+
+    public void setEndereco(String endereco) {
+        this.endereco = endereco;
     }
 
     public List<Veiculo> getVeiculos() {
