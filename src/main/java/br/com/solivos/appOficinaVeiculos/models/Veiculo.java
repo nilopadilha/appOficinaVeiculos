@@ -29,8 +29,6 @@ public class Veiculo {
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
 
-    public Veiculo() {
-    }
 
     public UUID getId() {
         return id;

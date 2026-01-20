@@ -28,9 +28,6 @@ public class Peca {
 
     private Integer estoqueMinimo = 5;
 
-    public Peca() {
-    }
-
     public UUID getId() {
         return id;
     }

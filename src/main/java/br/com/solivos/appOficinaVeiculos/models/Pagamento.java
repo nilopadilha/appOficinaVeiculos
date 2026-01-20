@@ -33,9 +33,6 @@ public class Pagamento {
 
     private LocalDateTime dataPagamento;
 
-    public Pagamento() {
-    }
-
     public UUID getId() {
         return id;
     }

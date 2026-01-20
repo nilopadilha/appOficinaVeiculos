@@ -9,7 +9,6 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "usuarios")
-
 @NoArgsConstructor
 @AllArgsConstructor
 public class Usuario {
@@ -30,9 +29,6 @@ public class Usuario {
 
     @Column(name = "criado_em", updatable = false)
     private LocalDateTime criadoEm = LocalDateTime.now();
-
-    public Usuario() {
-    }
 
     public UUID getId() {
         return id;
