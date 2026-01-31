@@ -7,7 +7,6 @@ import br.com.solivos.appOficinaVeiculos.dtos.LoginResponseDTO;
 import br.com.solivos.appOficinaVeiculos.models.Usuario;
 import br.com.solivos.appOficinaVeiculos.repository.UsuarioRepository;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,12 +16,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/auth")
-@RequiredArgsConstructor
 public class AutenticacaoController {
 
-    private UsuarioRepository usuarioRepository;
-    private TokenService tokenService;
-    private BCryptPasswordEncoder passwordEncoder;
+    private final UsuarioRepository usuarioRepository;
+    private final TokenService tokenService;
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    // CONSTRUTOR MANUAL - Isso garante que o Spring INJETE as dependências
+    public AutenticacaoController(UsuarioRepository usuarioRepository,
+                                  TokenService tokenService,
+                                  BCryptPasswordEncoder passwordEncoder) {
+        this.usuarioRepository = usuarioRepository;
+        this.tokenService = tokenService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid LoginRequestDTO dto) {
@@ -41,7 +48,7 @@ public class AutenticacaoController {
         return ResponseEntity.ok(new LoginResponseDTO(
                 token,
                 usuario.getEmail(),
-                usuario.getRole()
+                usuario.getRole().name()
         ));
     }
 }

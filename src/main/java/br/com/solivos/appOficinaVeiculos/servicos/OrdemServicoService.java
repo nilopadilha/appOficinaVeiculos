@@ -1,5 +1,7 @@
 package br.com.solivos.appOficinaVeiculos.servicos;
 
+import br.com.solivos.appOficinaVeiculos.dtos.OrdemPecaDetalheDTO;
+import br.com.solivos.appOficinaVeiculos.dtos.OrdemServicoDetalhadaDTO;
 import br.com.solivos.appOficinaVeiculos.dtos.OrdemServicoRequestDTO;
 import br.com.solivos.appOficinaVeiculos.dtos.OrdemServicoResponseDTO;
 import br.com.solivos.appOficinaVeiculos.enumerated.StatusOS;
@@ -13,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -85,5 +88,46 @@ public class OrdemServicoService {
                     .stream().map(this::toResponseDTO).toList();
         }
         return repository.findAll().stream().map(this::toResponseDTO).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public OrdemServicoDetalhadaDTO buscarDetalhesCompletos(UUID id) {
+        OrdemServico os = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ordem de Serviço não encontrada"));
+
+        // Mapeia a lista de peças para o DTO de detalhe
+        List<OrdemPecaDetalheDTO> itensDto = os.getPecas().stream()
+                .map(item -> new OrdemPecaDetalheDTO(
+                        item.getPeca().getId(),
+                        item.getPeca().getNome(),
+                        item.getQuantidade(),
+                        item.getPrecoAplicado(),
+                        item.getPrecoAplicado().multiply(BigDecimal.valueOf(item.getQuantidade()))
+                )).toList();
+
+        // Calcula totais
+        BigDecimal totalPecas = itensDto.stream()
+                .map(OrdemPecaDetalheDTO::subtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal totalGeral = totalPecas.add(os.getValorMaoObra());
+
+        return new OrdemServicoDetalhadaDTO(
+                os.getId(),
+                os.getNumeroOs(),
+                os.getStatus(),
+                os.getDataAbertura(),
+                os.getDescricaoProblema(),
+                os.getLaudoTecnico(),
+                os.getVeiculo().getPlaca(),
+                os.getVeiculo().getModelo(),
+                os.getVeiculo().getCliente().getNome(),
+                os.getVeiculo().getCliente().getTelefone(),
+                os.getResponsavel() != null ? os.getResponsavel().getNome() : "Não atribuído",
+                itensDto,
+                os.getValorMaoObra(),
+                totalPecas,
+                totalGeral
+        );
     }
 }

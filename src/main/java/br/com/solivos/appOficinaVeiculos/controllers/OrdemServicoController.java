@@ -1,5 +1,6 @@
 package br.com.solivos.appOficinaVeiculos.controllers;
 
+import br.com.solivos.appOficinaVeiculos.dtos.OrdemServicoDetalhadaDTO;
 import br.com.solivos.appOficinaVeiculos.dtos.OrdemServicoRequestDTO;
 import br.com.solivos.appOficinaVeiculos.dtos.OrdemServicoResponseDTO;
 import br.com.solivos.appOficinaVeiculos.enumerated.StatusOS;
@@ -42,6 +43,11 @@ public class OrdemServicoController {
             @RequestParam(required = false) StatusOS status,
             @RequestParam(required = false) UUID clienteId) {
         return ResponseEntity.ok(service.listarComFiltros(status, clienteId));
+    }
+
+    @GetMapping("/{id}/detalhes")
+    public ResponseEntity<OrdemServicoDetalhadaDTO> obterDetalhes(@PathVariable UUID id) {
+        return ResponseEntity.ok(service.buscarDetalhesCompletos(id));
     }
 
 }

@@ -1,5 +1,6 @@
 package br.com.solivos.appOficinaVeiculos.models;
 
+import br.com.solivos.appOficinaVeiculos.enumerated.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -25,7 +26,8 @@ public class Usuario {
     @Column(nullable = false)
     private String senha; // Aqui salvaremos o hash BCrypt
 
-    private String role = "USER"; // EX: ADMIN, MECANICO, PINTOR
+    @Enumerated(EnumType.STRING)
+    private Role role; // EX: ADMIN, MECANICO, PINTOR
 
     @Column(name = "criado_em", updatable = false)
     private LocalDateTime criadoEm = LocalDateTime.now();
@@ -62,11 +64,11 @@ public class Usuario {
         this.senha = senha;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 

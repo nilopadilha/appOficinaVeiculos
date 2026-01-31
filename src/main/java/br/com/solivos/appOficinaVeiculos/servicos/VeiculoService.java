@@ -18,13 +18,10 @@ import java.util.UUID;
 public class VeiculoService {
 
     // Adicionado 'final' para que o @RequiredArgsConstructor funcione e injete as dependências
-    private final VeiculoRepository veiculoRepository;
-    private final ClienteRepository clienteRepository;
+    private  VeiculoRepository veiculoRepository;
+    private  ClienteRepository clienteRepository;
 
-    public VeiculoService(VeiculoRepository veiculoRepository, ClienteRepository clienteRepository) {
-        this.veiculoRepository = veiculoRepository;
-        this.clienteRepository = clienteRepository;
-    }
+
 
     @Transactional(readOnly = true)
     public List<VeiculoResponseDTO> listarTodos() {
