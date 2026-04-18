@@ -14,12 +14,16 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class VeiculoService {
 
     // Adicionado 'final' para que o @RequiredArgsConstructor funcione e injete as dependências
-    private  VeiculoRepository veiculoRepository;
-    private  ClienteRepository clienteRepository;
+    private final VeiculoRepository veiculoRepository;
+    private final ClienteRepository clienteRepository;
+
+    public VeiculoService(VeiculoRepository veiculoRepository, ClienteRepository clienteRepository) {
+        this.veiculoRepository = veiculoRepository;
+        this.clienteRepository = clienteRepository;
+    }
 
 
 

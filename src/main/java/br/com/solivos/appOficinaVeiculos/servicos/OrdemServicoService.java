@@ -20,12 +20,17 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class OrdemServicoService {
 
-    private  OrdemServicoRepository repository;
-    private  VeiculoRepository veiculoRepository;
-    private  UsuarioRepository usuarioRepository;
+    private final OrdemServicoRepository repository;
+    private final VeiculoRepository veiculoRepository;
+    private final UsuarioRepository usuarioRepository;
+
+    public OrdemServicoService(OrdemServicoRepository repository, VeiculoRepository veiculoRepository, UsuarioRepository usuarioRepository) {
+        this.repository = repository;
+        this.veiculoRepository = veiculoRepository;
+        this.usuarioRepository = usuarioRepository;
+    }
 
     @Transactional
     public OrdemServicoResponseDTO abrirOrdem(OrdemServicoRequestDTO dto) {
@@ -37,7 +42,9 @@ public class OrdemServicoService {
         os.setDescricaoProblema(dto.descricaoProblema());
         os.setValorMaoObra(dto.valorMaoObra() != null ? dto.valorMaoObra() : java.math.BigDecimal.ZERO);
         os.setStatus(StatusOS.ORCAMENTO); // Status inicial padrão
+        os.setTipoServico(dto.tipoServico() != null ? dto.tipoServico() : br.com.solivos.appOficinaVeiculos.enumerated.TipoServico.MECANICA);
         os.setChecklistEntrada(dto.checklistEntrada());
+        os.setFotosPintura(dto.fotosPintura());
 
         if (dto.responsavelId() != null) {
             Usuario resp = usuarioRepository.findById(dto.responsavelId()).orElse(null);
@@ -66,11 +73,13 @@ public class OrdemServicoService {
                 os.getNumeroOs(),
                 os.getDescricaoProblema(),
                 os.getStatus(),
+                os.getTipoServico(),
                 os.getDataAbertura(),
                 os.getValorMaoObra(),
                 os.getVeiculo().getModelo(),
                 os.getVeiculo().getPlaca(),
-                os.getResponsavel() != null ? os.getResponsavel().getNome() : "Não atribuído"
+                os.getResponsavel() != null ? os.getResponsavel().getNome() : "Não atribuído",
+                os.getFotosPintura()
         );
     }
 
@@ -116,6 +125,7 @@ public class OrdemServicoService {
                 os.getId(),
                 os.getNumeroOs(),
                 os.getStatus(),
+                os.getTipoServico(),
                 os.getDataAbertura(),
                 os.getDescricaoProblema(),
                 os.getLaudoTecnico(),
@@ -127,7 +137,8 @@ public class OrdemServicoService {
                 itensDto,
                 os.getValorMaoObra(),
                 totalPecas,
-                totalGeral
+                totalGeral,
+                os.getFotosPintura()
         );
     }
 }

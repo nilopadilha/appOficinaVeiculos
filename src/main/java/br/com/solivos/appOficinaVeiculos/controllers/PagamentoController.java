@@ -15,10 +15,13 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/pagamentos")
-@RequiredArgsConstructor
 public class PagamentoController {
 
-    private PagamentoService service;
+    private final PagamentoService service;
+
+    public PagamentoController(PagamentoService service) {
+        this.service = service;
+    }
 
     @PostMapping
     public ResponseEntity<PagamentoResponseDTO> criarPagamento(@RequestBody @Valid PagamentoRequestDTO dto) {

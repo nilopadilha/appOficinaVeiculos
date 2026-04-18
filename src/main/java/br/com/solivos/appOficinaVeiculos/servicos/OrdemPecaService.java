@@ -14,12 +14,17 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class OrdemPecaService {
 
-    private OrdemPecaRepository ordemPecaRepository;
-    private OrdemServicoRepository osRepository;
-    private PecaRepository pecaRepository;
+    private final OrdemPecaRepository ordemPecaRepository;
+    private final OrdemServicoRepository osRepository;
+    private final PecaRepository pecaRepository;
+
+    public OrdemPecaService(OrdemPecaRepository ordemPecaRepository, OrdemServicoRepository osRepository, PecaRepository pecaRepository) {
+        this.ordemPecaRepository = ordemPecaRepository;
+        this.osRepository = osRepository;
+        this.pecaRepository = pecaRepository;
+    }
 
     @Transactional
     public void adicionarPecaAOrdem(UUID osId, OrdemPecaRequestDTO dto) {

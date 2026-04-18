@@ -1,6 +1,7 @@
 package br.com.solivos.appOficinaVeiculos.dtos;
 
 import br.com.solivos.appOficinaVeiculos.enumerated.StatusOS;
+import br.com.solivos.appOficinaVeiculos.enumerated.TipoServico;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -10,6 +11,7 @@ public record OrdemServicoDetalhadaDTO(
         UUID id,
         Integer numeroOs,
         StatusOS status,
+        TipoServico tipoServico,
         LocalDateTime dataAbertura,
         String descricaoProblema,
         String laudoTecnico,
@@ -27,5 +29,6 @@ public record OrdemServicoDetalhadaDTO(
         List<OrdemPecaDetalheDTO> itens,
         BigDecimal valorMaoObra,
         BigDecimal valorTotalPecas,
-        BigDecimal valorTotalGeral
+        BigDecimal valorTotalGeral,
+        String fotosPintura
 ) {}

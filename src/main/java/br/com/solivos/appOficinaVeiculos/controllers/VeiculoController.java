@@ -16,10 +16,13 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/veiculos")
-@RequiredArgsConstructor
 public class VeiculoController {
 
-    private VeiculoService service;
+    private final VeiculoService service;
+
+    public VeiculoController(VeiculoService service) {
+        this.service = service;
+    }
 
     @GetMapping
     public ResponseEntity<List<VeiculoResponseDTO>> getAll() {

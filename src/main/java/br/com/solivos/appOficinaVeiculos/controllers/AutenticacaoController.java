@@ -8,7 +8,8 @@ import br.com.solivos.appOficinaVeiculos.models.Usuario;
 import br.com.solivos.appOficinaVeiculos.repository.UsuarioRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,14 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/auth")
 public class AutenticacaoController {
 
-    private final UsuarioRepository usuarioRepository;
+    private final AuthenticationManager authenticationManager;
+    private final UsuarioRepository usuarioRepository;// Use o Manager
     private final TokenService tokenService;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    // CONSTRUTOR MANUAL - Isso garante que o Spring INJETE as dependências
-    public AutenticacaoController(UsuarioRepository usuarioRepository,
-                                  TokenService tokenService,
-                                  BCryptPasswordEncoder passwordEncoder) {
+    public AutenticacaoController(AuthenticationManager authenticationManager, UsuarioRepository usuarioRepository, TokenService tokenService, PasswordEncoder passwordEncoder) {
+        this.authenticationManager = authenticationManager;
         this.usuarioRepository = usuarioRepository;
         this.tokenService = tokenService;
         this.passwordEncoder = passwordEncoder;
@@ -33,22 +33,23 @@ public class AutenticacaoController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid LoginRequestDTO dto) {
-        // 1. Busca o usuário pelo email
-        Usuario usuario = usuarioRepository.findByEmailIgnoreCase(dto.email())
-                .orElseThrow(() -> new RuntimeException("Usuário ou senha inválidos"));
+        // Log para ver o que está vindo do Vue
+        System.out.println("Tentativa de login: " + dto.email());
 
-        // 2. Verifica se a senha coincide com o hash BCrypt
-        if (!passwordEncoder.matches(dto.senha(), usuario.getSenha())) {
-            throw new RuntimeException("Usuário ou senha inválidos");
+        Usuario usuario = usuarioRepository.findByEmailIgnoreCase(dto.email())
+                .orElseThrow(() -> {
+                    System.out.println("ERRO: Usuário não encontrado no banco: " + dto.email());
+                    return new RuntimeException("Usuário inexistente ou senha inválida");
+                });
+
+        boolean senhaOk = passwordEncoder.matches(dto.senha(), usuario.getSenha());
+        System.out.println("Senha informada bate com o hash? " + senhaOk);
+
+        if (!senhaOk) {
+            throw new RuntimeException("Usuário inexistente ou senha inválida");
         }
 
-        // 3. Gera o token JWT
         String token = tokenService.gerarToken(usuario);
-
-        return ResponseEntity.ok(new LoginResponseDTO(
-                token,
-                usuario.getEmail(),
-                usuario.getRole().name()
-        ));
+        return ResponseEntity.ok(new LoginResponseDTO(token, usuario.getEmail(), usuario.getRole().name()));
     }
 }

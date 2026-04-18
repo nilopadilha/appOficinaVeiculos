@@ -73,9 +73,11 @@ CREATE TABLE ordens_servico (
     laudo_tecnico TEXT,
     valor_mao_obra NUMERIC(12,2) NOT NULL DEFAULT 0,
     status status_os DEFAULT 'ORCAMENTO',
+    tipo_servico VARCHAR(20) DEFAULT 'MECANICA',
     data_abertura TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     data_finalizacao TIMESTAMP,
-    checklist_entrada JSONB
+    checklist_entrada JSONB,
+    fotos_pintura JSONB
 );
 
 -- 8. TABELA: ORDEM_PECAS (Relacionamento N:N)

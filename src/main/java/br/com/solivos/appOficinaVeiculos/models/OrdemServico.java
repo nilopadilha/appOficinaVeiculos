@@ -1,6 +1,7 @@
 package br.com.solivos.appOficinaVeiculos.models;
 
 import br.com.solivos.appOficinaVeiculos.enumerated.StatusOS;
+import br.com.solivos.appOficinaVeiculos.enumerated.TipoServico;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
@@ -26,14 +27,20 @@ public class OrdemServico {
     private String laudoTecnico;
     private BigDecimal valorMaoObra = BigDecimal.ZERO;
 
-    @Enumerated(EnumType.STRING) // Mapeia o nome do Enum para o tipo status_os do banco
+    @Enumerated(EnumType.STRING)
     private StatusOS status = StatusOS.ORCAMENTO;
+
+    @Enumerated(EnumType.STRING)
+    private TipoServico tipoServico = TipoServico.MECANICA;
 
     private LocalDateTime dataAbertura = LocalDateTime.now();
     private LocalDateTime dataFinalizacao;
 
     @Column(columnDefinition = "jsonb")
     private String checklistEntrada;
+
+    @Column(columnDefinition = "jsonb")
+    private String fotosPintura;
 
     @ManyToOne
     @JoinColumn(name = "veiculo_id")
@@ -95,6 +102,14 @@ public class OrdemServico {
         this.status = status;
     }
 
+    public TipoServico getTipoServico() {
+        return tipoServico;
+    }
+
+    public void setTipoServico(TipoServico tipoServico) {
+        this.tipoServico = tipoServico;
+    }
+
     public LocalDateTime getDataAbertura() {
         return dataAbertura;
     }
@@ -117,6 +132,14 @@ public class OrdemServico {
 
     public void setChecklistEntrada(String checklistEntrada) {
         this.checklistEntrada = checklistEntrada;
+    }
+
+    public String getFotosPintura() {
+        return fotosPintura;
+    }
+
+    public void setFotosPintura(String fotosPintura) {
+        this.fotosPintura = fotosPintura;
     }
 
     public Veiculo getVeiculo() {

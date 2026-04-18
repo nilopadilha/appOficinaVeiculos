@@ -15,10 +15,13 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/ordens-servico")
-@RequiredArgsConstructor
 public class OrdemServicoController {
 
-    private OrdemServicoService service;
+    private final OrdemServicoService service;
+
+    public OrdemServicoController(OrdemServicoService service) {
+        this.service = service;
+    }
 
     @PostMapping
     public ResponseEntity<OrdemServicoResponseDTO> abrirOS(@RequestBody @Valid OrdemServicoRequestDTO dto) {
