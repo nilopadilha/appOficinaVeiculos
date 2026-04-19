@@ -12,50 +12,40 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class ClienteService {
 
     private final ClienteRepository repository;
 
-    public ClienteService(ClienteRepository repository) {
-        this.repository = repository;
-    }
-
     @Transactional(readOnly = true)
     public List<ClienteResponseDTO> listarTodos() {
-        return repository.findAll().stream()
-                .map(this::toResponseDTO)
-                .toList();
+        return repository.findAll().stream().map(this::toResponseDTO).toList();
     }
 
     @Transactional
     public ClienteResponseDTO criar(ClienteRequestDTO dto) {
-        if (repository.findByDocumento(dto.documento())) {
-            throw new RuntimeException("Documento já cadastrado no sistema.");
-        }
         Cliente cliente = new Cliente();
-        updateEntityFromDto(cliente, dto);
+        cliente.setNome(dto.nome());
+        cliente.setDocumento(dto.documento());
+        cliente.setTelefone(dto.telefone());
+        cliente.setVip(dto.isVip());
+        cliente.setEndereco(dto.endereco());
         return toResponseDTO(repository.save(cliente));
     }
 
     @Transactional
     public ClienteResponseDTO atualizar(UUID id, ClienteRequestDTO dto) {
-        Cliente cliente = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
-
-        updateEntityFromDto(cliente, dto);
+        Cliente cliente = repository.findById(id).orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+        cliente.setNome(dto.nome());
+        cliente.setTelefone(dto.telefone());
+        cliente.setVip(dto.isVip());
+        cliente.setEndereco(dto.endereco());
         return toResponseDTO(repository.save(cliente));
     }
 
+    @Transactional
     public void deletar(UUID id) {
         repository.deleteById(id);
-    }
-
-    private void updateEntityFromDto(Cliente cliente, ClienteRequestDTO dto) {
-        cliente.setNome(dto.nome());
-        cliente.setDocumento(dto.documento());
-        cliente.setTelefone(dto.telefone());
-        cliente.setVip(dto.isVip() != null ? dto.isVip() : false);
-        cliente.setEndereco(dto.endereco());
     }
 
     private ClienteResponseDTO toResponseDTO(Cliente cliente) {

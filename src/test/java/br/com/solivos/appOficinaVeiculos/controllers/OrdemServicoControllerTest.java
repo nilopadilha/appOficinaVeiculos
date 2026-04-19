@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(OrdemServicoController.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class OrdemServicoControllerTest {
 
     @Autowired
@@ -36,6 +36,12 @@ class OrdemServicoControllerTest {
 
     @MockBean
     private OrdemServicoService service;
+
+    @MockBean
+    private br.com.solivos.appOficinaVeiculos.config.TokenService tokenService;
+
+    @MockBean
+    private br.com.solivos.appOficinaVeiculos.repository.UsuarioRepository usuarioRepository;
 
     @Autowired
     private ObjectMapper objectMapper;

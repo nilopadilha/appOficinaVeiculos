@@ -1,9 +1,7 @@
 package br.com.solivos.appOficinaVeiculos.controllers;
 
-
 import br.com.solivos.appOficinaVeiculos.dtos.VeiculoRequestDTO;
 import br.com.solivos.appOficinaVeiculos.dtos.VeiculoResponseDTO;
-
 import br.com.solivos.appOficinaVeiculos.servicos.VeiculoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,13 +14,10 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/veiculos")
+@RequiredArgsConstructor
 public class VeiculoController {
 
     private final VeiculoService service;
-
-    public VeiculoController(VeiculoService service) {
-        this.service = service;
-    }
 
     @GetMapping
     public ResponseEntity<List<VeiculoResponseDTO>> getAll() {

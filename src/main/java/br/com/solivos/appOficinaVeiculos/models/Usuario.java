@@ -2,8 +2,7 @@ package br.com.solivos.appOficinaVeiculos.models;
 
 import br.com.solivos.appOficinaVeiculos.enumerated.Role;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +14,8 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "usuarios")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Usuario implements UserDetails {
@@ -29,64 +30,16 @@ public class Usuario implements UserDetails {
     private String email;
 
     @Column(nullable = false)
-    private String senha; // Aqui salvaremos o hash BCrypt
+    private String senha;
 
     @Enumerated(EnumType.STRING)
-    private Role role; // EX: ADMIN, MECANICO, PINTOR
+    private Role role;
 
     @Column(name = "criado_em", updatable = false)
     private LocalDateTime criadoEm = LocalDateTime.now();
 
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public LocalDateTime getCriadoEm() {
-        return criadoEm;
-    }
-
-    public void setCriadoEm(LocalDateTime criadoEm) {
-        this.criadoEm = criadoEm;
-    }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Converte seu Enum Role para o formato que o Spring entende ("ROLE_ADMIN")
         return List.of(new SimpleGrantedAuthority("ROLE_" + this.role.name()));
     }
 
@@ -111,5 +64,4 @@ public class Usuario implements UserDetails {
 
     @Override
     public boolean isEnabled() { return true; }
-
 }

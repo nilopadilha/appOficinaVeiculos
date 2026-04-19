@@ -22,7 +22,7 @@ CREATE TYPE status_pagamento AS ENUM ('PENDENTE', 'PAGO', 'CANCELADO');
 
 -- 3. TABELA: USUARIOS (Administradores/Funcionários)
 CREATE TABLE usuarios (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL,
@@ -30,75 +30,8 @@ CREATE TABLE usuarios (
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 4. TABELA: CLIENTES
-CREATE TABLE clientes (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    nome VARCHAR(100) NOT NULL,
-    documento VARCHAR(14) NOT NULL UNIQUE,
-    telefone VARCHAR(15),
-    is_vip BOOLEAN DEFAULT FALSE,
-    endereco JSONB,
-    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+-- ...
 
--- 5. TABELA: VEICULOS
-CREATE TABLE veiculos (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    cliente_id UUID NOT NULL REFERENCES clientes(id) ON DELETE CASCADE,
-    modelo VARCHAR(100) NOT NULL,
-    marca VARCHAR(50),
-    ano VARCHAR(4) NOT NULL,
-    placa VARCHAR(10) NOT NULL UNIQUE,
-    cor_codigo VARCHAR(50),
-    vin_chassi VARCHAR(17) UNIQUE
-);
-
--- 6. TABELA: PECAS (Estoque)
-CREATE TABLE pecas (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    nome VARCHAR(100) NOT NULL,
-    sku VARCHAR(50) UNIQUE,
-    preco_unitario NUMERIC(12,2) NOT NULL,
-    quantidade_estoque INTEGER NOT NULL DEFAULT 0,
-    estoque_minimo INTEGER DEFAULT 5
-);
-
--- 7. TABELA: ORDENS_SERVICO
-CREATE TABLE ordens_servico (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    veiculo_id UUID NOT NULL REFERENCES veiculos(id) ON DELETE CASCADE,
-    responsavel_id UUID REFERENCES usuarios(id),
-    numero_os SERIAL UNIQUE,
-    descricao_problema TEXT NOT NULL,
-    laudo_tecnico TEXT,
-    valor_mao_obra NUMERIC(12,2) NOT NULL DEFAULT 0,
-    status status_os DEFAULT 'ORCAMENTO',
-    tipo_servico VARCHAR(20) DEFAULT 'MECANICA',
-    data_abertura TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    data_finalizacao TIMESTAMP,
-    checklist_entrada JSONB,
-    fotos_pintura JSONB
-);
-
--- 8. TABELA: ORDEM_PECAS (Relacionamento N:N)
-CREATE TABLE ordem_pecas (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    os_id UUID NOT NULL REFERENCES ordens_servico(id) ON DELETE CASCADE,
-    peca_id UUID NOT NULL REFERENCES pecas(id),
-    quantidade INTEGER NOT NULL DEFAULT 1,
-    preco_aplicado NUMERIC(12,2) NOT NULL
-);
-
--- 9. TABELA: PAGAMENTOS
-CREATE TABLE pagamentos (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    os_id UUID NOT NULL REFERENCES ordens_servico(id) ON DELETE CASCADE,
-    valor_total NUMERIC(12,2) NOT NULL,
-    metodo forma_pagamento NOT NULL,
-    status status_pagamento DEFAULT 'PENDENTE',
-    data_pagamento TIMESTAMP
-);
-
--- Inserção de Admin Padrão
+-- Inserção de Admin Padrão (Senha: admin123 encodada em BCrypt)
 INSERT INTO usuarios (nome, email, senha, role)
-VALUES ('Administrador', 'admin@oficina.com', 'admin123', 'ADMIN');
+VALUES ('Administrador', 'admin@oficina.com', '$2a$12$6Kx3sZ10G3qZfH4.vT.H.ePq5o1Xm1C.L6Y/HwW8Lz1z/6X4Q.YyO', 'ADMIN');

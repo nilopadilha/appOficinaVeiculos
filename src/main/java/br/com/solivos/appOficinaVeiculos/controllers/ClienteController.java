@@ -4,21 +4,20 @@ import br.com.solivos.appOficinaVeiculos.dtos.ClienteRequestDTO;
 import br.com.solivos.appOficinaVeiculos.dtos.ClienteResponseDTO;
 import br.com.solivos.appOficinaVeiculos.servicos.ClienteService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1/clientes")
+@RequiredArgsConstructor
 public class ClienteController {
 
     private final ClienteService clientService;
-
-    public ClienteController(ClienteService clientService) {
-        this.clientService = clientService;
-    }
 
     @GetMapping
     public ResponseEntity<List<ClienteResponseDTO>> getAll() {

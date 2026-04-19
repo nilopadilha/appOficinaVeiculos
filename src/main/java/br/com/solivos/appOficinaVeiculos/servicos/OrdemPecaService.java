@@ -14,41 +14,31 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class OrdemPecaService {
 
     private final OrdemPecaRepository ordemPecaRepository;
     private final OrdemServicoRepository osRepository;
     private final PecaRepository pecaRepository;
 
-    public OrdemPecaService(OrdemPecaRepository ordemPecaRepository, OrdemServicoRepository osRepository, PecaRepository pecaRepository) {
-        this.ordemPecaRepository = ordemPecaRepository;
-        this.osRepository = osRepository;
-        this.pecaRepository = pecaRepository;
-    }
-
     @Transactional
     public void adicionarPecaAOrdem(UUID osId, OrdemPecaRequestDTO dto) {
-        // 1. Validar a existência da OS
         OrdemServico os = osRepository.findById(osId)
-                .orElseThrow(() -> new RuntimeException("Ordem de Serviço não encontrada"));
+                .orElseThrow(() -> new RuntimeException("Ordem de serviço não encontrada"));
 
-        // 2. Validar e buscar a peça
         Peca peca = pecaRepository.findById(dto.pecaId())
-                .orElseThrow(() -> new RuntimeException("Peça não encontrada no catálogo"));
+                .orElseThrow(() -> new RuntimeException("Peça não encontrada"));
 
-        // 3. Validar estoque
         if (peca.getQuantidadeEstoque() < dto.quantidade()) {
             throw new RuntimeException("Estoque insuficiente para a peça: " + peca.getNome());
         }
 
-        // 4. Criar o vínculo e congelar o preço
         OrdemPeca item = new OrdemPeca();
         item.setOrdemServico(os);
         item.setPeca(peca);
         item.setQuantidade(dto.quantidade());
-        item.setPrecoAplicado(peca.getPrecoUnitario()); // Garante o histórico financeiro
+        item.setPrecoAplicado(peca.getPrecoUnitario());
 
-        // 5. Baixar estoque
         peca.setQuantidadeEstoque(peca.getQuantidadeEstoque() - dto.quantidade());
 
         pecaRepository.save(peca);

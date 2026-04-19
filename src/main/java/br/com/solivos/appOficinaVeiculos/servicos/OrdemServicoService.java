@@ -12,6 +12,8 @@ import br.com.solivos.appOficinaVeiculos.repository.OrdemServicoRepository;
 import br.com.solivos.appOficinaVeiculos.repository.UsuarioRepository;
 import br.com.solivos.appOficinaVeiculos.repository.VeiculoRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,28 +22,30 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class OrdemServicoService {
+
+    private static final Logger logger = LoggerFactory.getLogger(OrdemServicoService.class);
 
     private final OrdemServicoRepository repository;
     private final VeiculoRepository veiculoRepository;
     private final UsuarioRepository usuarioRepository;
 
-    public OrdemServicoService(OrdemServicoRepository repository, VeiculoRepository veiculoRepository, UsuarioRepository usuarioRepository) {
-        this.repository = repository;
-        this.veiculoRepository = veiculoRepository;
-        this.usuarioRepository = usuarioRepository;
-    }
-
     @Transactional
     public OrdemServicoResponseDTO abrirOrdem(OrdemServicoRequestDTO dto) {
+        logger.info("Abrindo nova ordem de serviço para o veículo ID: {}", dto.veiculoId());
+        
         Veiculo veiculo = veiculoRepository.findById(dto.veiculoId())
-                .orElseThrow(() -> new RuntimeException("Veículo não encontrado"));
+                .orElseThrow(() -> {
+                    logger.error("Falha ao abrir OS: Veículo {} não encontrado", dto.veiculoId());
+                    return new RuntimeException("Veículo não encontrado");
+                });
 
         OrdemServico os = new OrdemServico();
         os.setVeiculo(veiculo);
         os.setDescricaoProblema(dto.descricaoProblema());
         os.setValorMaoObra(dto.valorMaoObra() != null ? dto.valorMaoObra() : java.math.BigDecimal.ZERO);
-        os.setStatus(StatusOS.ORCAMENTO); // Status inicial padrão
+        os.setStatus(StatusOS.ORCAMENTO);
         os.setTipoServico(dto.tipoServico() != null ? dto.tipoServico() : br.com.solivos.appOficinaVeiculos.enumerated.TipoServico.MECANICA);
         os.setChecklistEntrada(dto.checklistEntrada());
         os.setFotosPintura(dto.fotosPintura());
@@ -104,7 +108,6 @@ public class OrdemServicoService {
         OrdemServico os = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ordem de Serviço não encontrada"));
 
-        // Mapeia a lista de peças para o DTO de detalhe
         List<OrdemPecaDetalheDTO> itensDto = os.getPecas().stream()
                 .map(item -> new OrdemPecaDetalheDTO(
                         item.getPeca().getId(),
@@ -114,7 +117,6 @@ public class OrdemServicoService {
                         item.getPrecoAplicado().multiply(BigDecimal.valueOf(item.getQuantidade()))
                 )).toList();
 
-        // Calcula totais
         BigDecimal totalPecas = itensDto.stream()
                 .map(OrdemPecaDetalheDTO::subtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);

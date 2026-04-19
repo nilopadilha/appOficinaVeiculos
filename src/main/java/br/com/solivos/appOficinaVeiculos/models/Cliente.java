@@ -1,14 +1,15 @@
 package br.com.solivos.appOficinaVeiculos.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Table(name = "clientes")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Cliente {
@@ -25,66 +26,9 @@ public class Cliente {
     private String telefone;
     private Boolean isVip = false;
 
-    @Column(columnDefinition = "jsonb") // Postgres specific
+    @Column(columnDefinition = "jsonb")
     private String endereco;
 
     @OneToMany(mappedBy = "cliente")
     private List<Veiculo> veiculos;
-
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getDocumento() {
-        return documento;
-    }
-
-    public void setDocumento(String documento) {
-        this.documento = documento;
-    }
-
-    public String getTelefone() {
-        return telefone;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
-
-    public Boolean getVip() {
-        return isVip;
-    }
-
-    public void setVip(Boolean vip) {
-        isVip = vip;
-    }
-
-    public String getEndereco() {
-        return endereco;
-    }
-
-    public void setEndereco(String endereco) {
-        this.endereco = endereco;
-    }
-
-    public List<Veiculo> getVeiculos() {
-        return veiculos;
-    }
-
-    public void setVeiculos(List<Veiculo> veiculos) {
-        this.veiculos = veiculos;
-    }
 }

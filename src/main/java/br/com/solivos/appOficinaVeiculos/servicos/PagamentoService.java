@@ -3,6 +3,7 @@ package br.com.solivos.appOficinaVeiculos.servicos;
 import br.com.solivos.appOficinaVeiculos.dtos.PagamentoRequestDTO;
 import br.com.solivos.appOficinaVeiculos.dtos.PagamentoResponseDTO;
 import br.com.solivos.appOficinaVeiculos.enumerated.StatusPagamento;
+import br.com.solivos.appOficinaVeiculos.models.OrdemPeca;
 import br.com.solivos.appOficinaVeiculos.models.OrdemServico;
 import br.com.solivos.appOficinaVeiculos.models.Pagamento;
 import br.com.solivos.appOficinaVeiculos.repository.OrdemServicoRepository;
@@ -17,54 +18,43 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class PagamentoService {
 
     private final PagamentoRepository pagamentoRepository;
     private final OrdemServicoRepository osRepository;
 
-    public PagamentoService(PagamentoRepository pagamentoRepository, OrdemServicoRepository osRepository) {
-        this.pagamentoRepository = pagamentoRepository;
-        this.osRepository = osRepository;
-    }
-
     @Transactional
     public PagamentoResponseDTO gerarPagamento(PagamentoRequestDTO dto) {
-        OrdemServico os = osRepository.findById(dto.osId())
-                .orElseThrow(() -> new RuntimeException("Ordem de Serviço não encontrada"));
+        OrdemServico os = osRepository.findById(dto.ordemServicoId())
+                .orElseThrow(() -> new RuntimeException("Ordem de serviço não encontrada"));
 
-        // Cálculo dinâmico: Mão de Obra + (Quantidade * Preço Aplicado de cada peça)
         BigDecimal totalPecas = os.getPecas().stream()
                 .map(item -> item.getPrecoAplicado().multiply(BigDecimal.valueOf(item.getQuantidade())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal valorFinal = os.getValorMaoObra().add(totalPecas);
+        BigDecimal valorTotal = totalPecas.add(os.getValorMaoObra());
 
-        Pagamento pagamento = new Pagamento();
-        pagamento.setOrdemServico(os);
-        pagamento.setValorTotal(valorFinal);
-        pagamento.setMetodo(dto.metodo());
-        pagamento.setStatus(StatusPagamento.PENDENTE);
+        Pagamento p = new Pagamento();
+        p.setOrdemServico(os);
+        p.setValorTotal(valorTotal);
+        p.setMetodo(dto.metodo());
+        p.setStatus(StatusPagamento.PENDENTE);
 
-        return toResponseDTO(pagamentoRepository.save(pagamento));
+        return toResponseDTO(pagamentoRepository.save(p));
     }
 
     @Transactional(readOnly = true)
     public List<PagamentoResponseDTO> listarPorStatus(StatusPagamento status) {
-        // Uso do método refinado findByStatus do Repository
-        return pagamentoRepository.findByStatus(status).stream()
-                .map(this::toResponseDTO)
-                .toList();
+        return pagamentoRepository.findByStatus(status).stream().map(this::toResponseDTO).toList();
     }
 
     @Transactional
     public PagamentoResponseDTO confirmarPagamento(UUID id) {
-        Pagamento pagamento = pagamentoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pagamento não encontrado"));
-
-        pagamento.setStatus(StatusPagamento.PAGO);
-        pagamento.setDataPagamento(LocalDateTime.now());
-
-        return toResponseDTO(pagamentoRepository.save(pagamento));
+        Pagamento p = pagamentoRepository.findById(id).orElseThrow(() -> new RuntimeException("Pagamento não encontrado"));
+        p.setStatus(StatusPagamento.PAGO);
+        p.setDataPagamento(LocalDateTime.now());
+        return toResponseDTO(pagamentoRepository.save(p));
     }
 
     private PagamentoResponseDTO toResponseDTO(Pagamento p) {

@@ -15,36 +15,28 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/ordens-servico")
+@RequiredArgsConstructor
 public class OrdemServicoController {
 
     private final OrdemServicoService service;
 
-    public OrdemServicoController(OrdemServicoService service) {
-        this.service = service;
-    }
-
     @PostMapping
-    public ResponseEntity<OrdemServicoResponseDTO> abrirOS(@RequestBody @Valid OrdemServicoRequestDTO dto) {
+    public ResponseEntity<OrdemServicoResponseDTO> abrir(@RequestBody @Valid OrdemServicoRequestDTO dto) {
         return ResponseEntity.ok(service.abrirOrdem(dto));
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<OrdemServicoResponseDTO> mudarStatus(
-            @PathVariable UUID id,
-            @RequestParam StatusOS novoStatus) {
+    public ResponseEntity<OrdemServicoResponseDTO> mudarStatus(@PathVariable UUID id, @RequestParam StatusOS novoStatus) {
         return ResponseEntity.ok(service.atualizarStatus(id, novoStatus));
     }
 
     @GetMapping("/numero/{numeroOs}")
-    public ResponseEntity<OrdemServicoResponseDTO> getByNumero(@PathVariable Integer numeroOs) {
+    public ResponseEntity<OrdemServicoResponseDTO> buscarPorNumero(@PathVariable Integer numeroOs) {
         return ResponseEntity.ok(service.buscarPorNumero(numeroOs));
     }
 
-
     @GetMapping
-    public ResponseEntity<List<OrdemServicoResponseDTO>> listarComFiltros(
-            @RequestParam(required = false) StatusOS status,
-            @RequestParam(required = false) UUID clienteId) {
+    public ResponseEntity<List<OrdemServicoResponseDTO>> listar(@RequestParam(required = false) StatusOS status, @RequestParam(required = false) UUID clienteId) {
         return ResponseEntity.ok(service.listarComFiltros(status, clienteId));
     }
 
@@ -52,5 +44,4 @@ public class OrdemServicoController {
     public ResponseEntity<OrdemServicoDetalhadaDTO> obterDetalhes(@PathVariable UUID id) {
         return ResponseEntity.ok(service.buscarDetalhesCompletos(id));
     }
-
 }
