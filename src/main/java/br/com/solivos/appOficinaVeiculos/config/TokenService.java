@@ -7,6 +7,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.security.Key;
 import java.nio.charset.StandardCharsets;
@@ -14,6 +16,8 @@ import java.util.Date;
 
 @Service
 public class TokenService {
+
+    private static final Logger logger = LoggerFactory.getLogger(TokenService.class);
 
     @Value("${api.security.token.secret}")
     private String secret;
@@ -32,6 +36,7 @@ public class TokenService {
 
     public String validateToken(String token) {
         try {
+            logger.debug("Tentando validar token: [{}]", token);
             return Jwts.parserBuilder()
                     .setSigningKey(getKey())
                     .build()
@@ -39,6 +44,7 @@ public class TokenService {
                     .getBody()
                     .getSubject();
         } catch (Exception e) {
+            logger.debug("Falha na validação do token: {}. Valor recebido: [{}]", e.getMessage(), token);
             return null;
         }
     }

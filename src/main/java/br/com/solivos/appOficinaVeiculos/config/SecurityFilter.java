@@ -34,16 +34,15 @@ public class SecurityFilter extends OncePerRequestFilter {
         if (token != null) {
             var email = tokenService.validateToken(token);
             if (email != null) {
-                logger.info("Token validado com sucesso para o email: {}", email);
                 var user = usuarioRepository.findByEmailIgnoreCase(email).orElse(null);
                 if (user != null) {
                     var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } else {
-                    logger.warn("Usuário do token não encontrado no banco: {}", email);
+                    logger.warn("Token válido, mas usuário não encontrado no banco: {}", email);
                 }
             } else {
-                logger.warn("Token inválido ou expirado recebido.");
+                logger.debug("Token inválido ou expirado ignorado pelo filtro.");
             }
         }
         filterChain.doFilter(request, response);
@@ -51,7 +50,13 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     private String recoverToken(HttpServletRequest request) {
         var authHeader = request.getHeader("Authorization");
-        if (authHeader == null) return null;
-        return authHeader.replace("Bearer ", "");
+        if (authHeader == null || !authHeader.startsWith("Bearer ") || authHeader.length() <= 7) {
+            return null;
+        }
+        var token = authHeader.substring(7).trim();
+        if (token.isEmpty() || token.equalsIgnoreCase("null") || token.equalsIgnoreCase("undefined")) {
+            return null;
+        }
+        return token;
     }
 }
