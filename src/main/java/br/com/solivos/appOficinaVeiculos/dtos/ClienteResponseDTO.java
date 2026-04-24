@@ -7,6 +7,7 @@ public record ClienteResponseDTO (
         String nome,
         String documento,
         String telefone,
+        String email,
         Boolean isVip,
         String endereco
 ) {}

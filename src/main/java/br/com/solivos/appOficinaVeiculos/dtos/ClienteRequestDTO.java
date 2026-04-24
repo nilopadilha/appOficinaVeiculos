@@ -1,5 +1,6 @@
 package br.com.solivos.appOficinaVeiculos.dtos;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -13,6 +14,11 @@ public record ClienteRequestDTO(
         String documento,
 
         String telefone,
+
+        @Email(message = "O e-mail deve ser válido")
+        @Size(max = 150)
+        String email,
+
         Boolean isVip,
         String endereco // Recebe o JSON como String ou objeto mapeado
 ) {}

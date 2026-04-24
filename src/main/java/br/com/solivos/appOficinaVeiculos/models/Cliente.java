@@ -1,11 +1,15 @@
 package br.com.solivos.appOficinaVeiculos.models;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import java.util.List;
 import java.util.UUID;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "clientes")
 public class Cliente {
@@ -23,6 +27,9 @@ public class Cliente {
     
     private Boolean vip = false;
 
+    @Column(length = 150)
+    private String email;
+
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private String endereco;
@@ -32,33 +39,14 @@ public class Cliente {
 
     public Cliente() {}
 
-    public Cliente(UUID id, String nome, String documento, String telefone, Boolean vip, String endereco) {
+    public Cliente(UUID id, String nome, String documento, String telefone, Boolean vip, String email, String endereco, List<Veiculo> veiculos) {
         this.id = id;
         this.nome = nome;
         this.documento = documento;
         this.telefone = telefone;
         this.vip = vip;
+        this.email = email;
         this.endereco = endereco;
+        this.veiculos = veiculos;
     }
-
-    public UUID getId() { return id; }
-    public void setId(UUID id) { this.id = id; }
-
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
-
-    public String getDocumento() { return documento; }
-    public void setDocumento(String documento) { this.documento = documento; }
-
-    public String getTelefone() { return telefone; }
-    public void setTelefone(String telefone) { this.telefone = telefone; }
-
-    public Boolean getVip() { return vip; }
-    public void setVip(Boolean vip) { this.vip = vip; }
-
-    public String getEndereco() { return endereco; }
-    public void setEndereco(String endereco) { this.endereco = endereco; }
-
-    public List<Veiculo> getVeiculos() { return veiculos; }
-    public void setVeiculos(List<Veiculo> veiculos) { this.veiculos = veiculos; }
 }

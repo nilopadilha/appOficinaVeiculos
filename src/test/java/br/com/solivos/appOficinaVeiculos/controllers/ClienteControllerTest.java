@@ -45,19 +45,20 @@ class ClienteControllerTest {
     @Test
     @DisplayName("Deve listar todos os clientes com sucesso")
     void deveListarClientes() throws Exception {
-        ClienteResponseDTO cliente = new ClienteResponseDTO(UUID.randomUUID(), "João Silva", "12345678901", "11999999999", false, "{}");
+        ClienteResponseDTO cliente = new ClienteResponseDTO(UUID.randomUUID(), "João Silva", "12345678901", "11999999999", "joao@email.com", false, "{}");
         when(clienteService.listarTodos()).thenReturn(List.of(cliente));
 
         mockMvc.perform(get("/api/v1/clientes"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].nome").value("João Silva"));
+                .andExpect(jsonPath("$[0].nome").value("João Silva"))
+                .andExpect(jsonPath("$[0].email").value("joao@email.com"));
     }
 
     @Test
     @DisplayName("Deve criar um novo cliente com sucesso")
     void deveCriarCliente() throws Exception {
-        ClienteRequestDTO request = new ClienteRequestDTO("João Silva", "12345678901", "11999999999", false, "{}");
-        ClienteResponseDTO response = new ClienteResponseDTO(UUID.randomUUID(), "João Silva", "12345678901", "11999999999", false, "{}");
+        ClienteRequestDTO request = new ClienteRequestDTO("João Silva", "12345678901", "11999999999", "joao@email.com", false, "{}");
+        ClienteResponseDTO response = new ClienteResponseDTO(UUID.randomUUID(), "João Silva", "12345678901", "11999999999", "joao@email.com", false, "{}");
         
         when(clienteService.criar(any())).thenReturn(response);
 
@@ -65,6 +66,7 @@ class ClienteControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.nome").value("João Silva"));
+                .andExpect(jsonPath("$.nome").value("João Silva"))
+                .andExpect(jsonPath("$.email").value("joao@email.com"));
     }
 }

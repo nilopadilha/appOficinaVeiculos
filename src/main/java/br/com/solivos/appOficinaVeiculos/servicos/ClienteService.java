@@ -31,6 +31,7 @@ public class ClienteService {
         cliente.setNome(dto.nome());
         cliente.setDocumento(dto.documento());
         cliente.setTelefone(dto.telefone());
+        cliente.setEmail(dto.email());
         cliente.setVip(dto.isVip());
         cliente.setEndereco(dto.endereco());
         return toResponseDTO(repository.save(cliente));
@@ -41,6 +42,7 @@ public class ClienteService {
         Cliente cliente = repository.findById(id).orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
         cliente.setNome(dto.nome());
         cliente.setTelefone(dto.telefone());
+        cliente.setEmail(dto.email());
         cliente.setVip(dto.isVip());
         cliente.setEndereco(dto.endereco());
         return toResponseDTO(repository.save(cliente));
@@ -57,6 +59,7 @@ public class ClienteService {
                 cliente.getNome(),
                 cliente.getDocumento(),
                 cliente.getTelefone(),
+                cliente.getEmail(),
                 cliente.getVip(),
                 cliente.getEndereco()
         );
