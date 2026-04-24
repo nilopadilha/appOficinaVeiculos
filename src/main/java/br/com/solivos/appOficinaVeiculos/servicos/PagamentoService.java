@@ -18,15 +18,19 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class PagamentoService {
 
     private final PagamentoRepository pagamentoRepository;
     private final OrdemServicoRepository osRepository;
 
+    public PagamentoService(PagamentoRepository pagamentoRepository, OrdemServicoRepository osRepository) {
+        this.pagamentoRepository = pagamentoRepository;
+        this.osRepository = osRepository;
+    }
+
     @Transactional
     public PagamentoResponseDTO gerarPagamento(PagamentoRequestDTO dto) {
-        OrdemServico os = osRepository.findById(dto.ordemServicoId())
+        OrdemServico os = osRepository.findById(dto.osId())
                 .orElseThrow(() -> new RuntimeException("Ordem de serviço não encontrada"));
 
         BigDecimal totalPecas = os.getPecas().stream()

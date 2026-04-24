@@ -14,11 +14,15 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class VeiculoService {
 
     private final VeiculoRepository veiculoRepository;
     private final ClienteRepository clienteRepository;
+
+    public VeiculoService(VeiculoRepository veiculoRepository, ClienteRepository clienteRepository) {
+        this.veiculoRepository = veiculoRepository;
+        this.clienteRepository = clienteRepository;
+    }
 
     @Transactional(readOnly = true)
     public List<VeiculoResponseDTO> listarTodos() {

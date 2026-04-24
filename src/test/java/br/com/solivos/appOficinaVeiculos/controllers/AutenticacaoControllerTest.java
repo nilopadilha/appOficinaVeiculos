@@ -16,18 +16,24 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.context.ActiveProfiles;
+
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AutenticacaoController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@ActiveProfiles("test")
 class AutenticacaoControllerTest {
 
     @Autowired
@@ -36,11 +42,9 @@ class AutenticacaoControllerTest {
     @MockBean
     private AuthenticationManager authenticationManager;
     @MockBean
-    private UsuarioRepository usuarioRepository;
-    @MockBean
     private TokenService tokenService;
     @MockBean
-    private PasswordEncoder passwordEncoder;
+    private UsuarioRepository usuarioRepository; // Necessário para o SecurityFilter subir
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -51,11 +55,11 @@ class AutenticacaoControllerTest {
         LoginRequestDTO request = new LoginRequestDTO("admin@oficina.com", "senha123");
         Usuario usuario = new Usuario();
         usuario.setEmail("admin@oficina.com");
-        usuario.setSenha("hash_senha");
         usuario.setRole(Role.ADMIN);
 
-        when(usuarioRepository.findByEmailIgnoreCase(anyString())).thenReturn(Optional.of(usuario));
-        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
+        Authentication auth = mock(Authentication.class);
+        when(auth.getPrincipal()).thenReturn(usuario);
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(auth);
         when(tokenService.gerarToken(usuario)).thenReturn("token_jwt_gerado");
 
         mockMvc.perform(post("/api/v1/auth/login")
@@ -67,16 +71,16 @@ class AutenticacaoControllerTest {
     }
 
     @Test
-    @DisplayName("Deve retornar erro ao tentar login com senha inválida")
+    @DisplayName("Deve retornar erro ao tentar login com credenciais inválidas")
     void deveFalharLoginSenhaInvalida() throws Exception {
         LoginRequestDTO request = new LoginRequestDTO("admin@oficina.com", "senha_errada");
         
-        when(usuarioRepository.findByEmailIgnoreCase(anyString())).thenReturn(Optional.of(new Usuario()));
-        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenThrow(new org.springframework.security.authentication.BadCredentialsException("Email ou senha incorretos"));
 
         mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest()); // O Handler captura RuntimeException como 400
+                .andExpect(status().isUnauthorized()); // O Handler agora captura BadCredentialsException como 401
     }
 }

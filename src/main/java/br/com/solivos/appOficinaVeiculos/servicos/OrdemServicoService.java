@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class OrdemServicoService {
 
     private static final Logger logger = LoggerFactory.getLogger(OrdemServicoService.class);
@@ -30,6 +29,14 @@ public class OrdemServicoService {
     private final OrdemServicoRepository repository;
     private final VeiculoRepository veiculoRepository;
     private final UsuarioRepository usuarioRepository;
+
+    public OrdemServicoService(OrdemServicoRepository repository, 
+                               VeiculoRepository veiculoRepository, 
+                               UsuarioRepository usuarioRepository) {
+        this.repository = repository;
+        this.veiculoRepository = veiculoRepository;
+        this.usuarioRepository = usuarioRepository;
+    }
 
     @Transactional
     public OrdemServicoResponseDTO abrirOrdem(OrdemServicoRequestDTO dto) {

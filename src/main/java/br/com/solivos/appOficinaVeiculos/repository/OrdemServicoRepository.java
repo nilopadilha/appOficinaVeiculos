@@ -23,4 +23,9 @@ public interface OrdemServicoRepository extends JpaRepository<OrdemServico, UUID
 
     // Busca ordens sob responsabilidade de um funcionário
     List<OrdemServico> findAllByResponsavelIdAndStatusNot(UUID responsavelId, StatusOS status);
+
+    long countByStatusNot(StatusOS status);
+
+    @org.springframework.data.jpa.repository.Query("SELECT o.status, COUNT(o) FROM OrdemServico o GROUP BY o.status")
+    List<Object[]> countByStatusGrouped();
 }

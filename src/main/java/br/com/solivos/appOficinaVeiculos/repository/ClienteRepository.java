@@ -16,5 +16,5 @@ public interface ClienteRepository extends JpaRepository<Cliente, UUID> {
     List<Cliente> findByNomeContainingIgnoreCase(String nome);
 
     // Filtro para marketing ou prioridade
-    List<Cliente> findAllByIsVipTrue();
+    List<Cliente> findAllByVipTrue();
 }

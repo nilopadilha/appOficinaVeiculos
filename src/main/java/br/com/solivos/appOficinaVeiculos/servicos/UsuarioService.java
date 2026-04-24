@@ -5,7 +5,7 @@ import br.com.solivos.appOficinaVeiculos.dtos.UsuarioRequestDTO;
 import br.com.solivos.appOficinaVeiculos.enumerated.Role;
 import br.com.solivos.appOficinaVeiculos.models.Usuario;
 import br.com.solivos.appOficinaVeiculos.repository.UsuarioRepository;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,9 +17,9 @@ public class UsuarioService {
     private final UsuarioRepository repository;
 
     // Injete o passwordEncoder em vez de dar 'new' (melhor prática de segurança)
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository repository, BCryptPasswordEncoder passwordEncoder) {
+    public UsuarioService(UsuarioRepository repository, PasswordEncoder passwordEncoder) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
     }

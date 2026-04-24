@@ -12,10 +12,13 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class ClienteService {
 
     private final ClienteRepository repository;
+
+    public ClienteService(ClienteRepository repository) {
+        this.repository = repository;
+    }
 
     @Transactional(readOnly = true)
     public List<ClienteResponseDTO> listarTodos() {

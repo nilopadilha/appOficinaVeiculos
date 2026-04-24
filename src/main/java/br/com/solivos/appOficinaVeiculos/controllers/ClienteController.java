@@ -14,10 +14,13 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/clientes")
-@RequiredArgsConstructor
 public class ClienteController {
 
     private final ClienteService clientService;
+
+    public ClienteController(ClienteService clientService) {
+        this.clientService = clientService;
+    }
 
     @GetMapping
     public ResponseEntity<List<ClienteResponseDTO>> getAll() {
