@@ -1,0 +1,129 @@
+:root {
+  /* Paleta Premium Baseada em Azul */
+  --primary: #0061f2;       /* Azul Royal Moderno */
+  --primary-light: #e0e9ff;
+  --secondary: #69707a;
+  --success: #00ac69;
+  --warning: #f4a100;
+  --danger: #e81500;
+  
+  /* Backgrounds */
+  --bg-app: #f2f5f9;
+  --bg-card: #ffffff;
+  
+  /* Textos */
+  --text-heading: #1a202e;
+  --text-body: #4a5568;
+  --text-muted: #a0aec0;
+  
+  /* Efeitos */
+  --shadow-sm: 0 0.15rem 1.75rem 0 rgba(33, 40, 50, 0.15);
+  --shadow-md: 0 0.5rem 2rem rgba(0, 0, 0, 0.1);
+  --radius: 12px;
+  --sidebar-width: 260px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background-color: var(--bg-app);
+  color: var(--text-body);
+  overflow-x: hidden;
+}
+
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  padding: 40px;
+}
+
+/* Cards com Profundidade */
+.card {
+  background: var(--bg-card);
+  border: none;
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+  transition: transform 0.2s ease;
+}
+
+h1, h2, h3 {
+  color: var(--text-heading);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Botões Modernos */
+button {
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+}
+
+button.primary {
+  background-color: var(--primary);
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 97, 242, 0.2);
+}
+
+button.primary:hover {
+  background-color: #004dc2;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 15px rgba(0, 97, 242, 0.3);
+}
+
+/* Tabelas Elegantes */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th {
+  text-align: left;
+  padding: 16px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.data-table td {
+  padding: 18px 16px;
+  border-bottom: 1px solid #f1f4f8;
+  font-size: 0.95rem;
+}
+
+.data-table tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tr:hover {
+  background-color: #f8fbff;
+}
+
+/* Badges Minimalistas */
+.badge {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.badge-success { background: #c6f6d5; color: #22543d; }
+.badge-warning { background: #feebc8; color: #744210; }
+.badge-danger { background: #fed7d7; color: #822727; }
